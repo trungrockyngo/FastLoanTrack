@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const Borrower = require("../model/Borrower");  
 const Lender = require("../model/Lender");
+const LoanRequest = require("../model/LoanRequest");
 
 const server = 'cluster0.hhad4.mongodb.net';
 const username = 'admin';
@@ -19,7 +20,17 @@ function createBorrower(borrower) {
     Borrower.create(borrower);
 }
 
+function createLender(lender) {    
+    Lender.create(lender);
+}
+
+function createLoanRequest(loanRequest) {
+    Loan.create(loanRequest);
+}
+
 module.exports = {
     connectToDB: connectToDB,
-    createBorrower: createBorrower
+    createBorrower: createBorrower,
+    createLender: createLender,
+    createLoanRequest: createLoanRequest
 };
