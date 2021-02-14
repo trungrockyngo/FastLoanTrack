@@ -67,7 +67,7 @@ function getLenders() {
         tx.sign(onchainConfig.superValidatorPrivateKey);
         let serializedTx = tx.serialize();
         web3.eth.sendSignedTransaction('0x' + serializedTx.toString('hex')).on('receipt', console.log);
-        //TASK: implement return returned data from function.    
+        //TASK: implement return returned data from function.  -- Try to use call instead of sendSignedTransaction.  
     });
 }
 
@@ -111,6 +111,8 @@ function approveLoanRequest(reqId, lenderAddr, noOfInstallment) {
 
 function transferbyEscrowTo(borrowerAddr, amount, requestId) {
     web3.eth.getTransactionCount(onchainConfig.superValidatorAccount).then(nonce => {
+
+        //FIX: BigNumber issue
         let amountBN = new BN(amount).toString();
         const _data = contractInstance.methods.transferbyEscrowTo(borrowerAddr, amountBN, requestId).encodeABI();
         var rawTx = {
