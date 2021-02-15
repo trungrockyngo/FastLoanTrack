@@ -5,8 +5,8 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var cors = require('cors');
 
-const mongoose = require("mongoose");
-const Borrower = require("./off-chain/db-models/Borrower");  
+//const mongoose = require("mongoose");
+const Borrower = require("./off-chain/db-models/Borrower");
 const Lender = require("./off-chain/db-models/Lender");
 const DB = require('./off-chain/db');
 const onchainConfig = require('./on-chain/configs');
@@ -17,7 +17,11 @@ var indexRouter = require('./routes/index');
 
 var app = express();
 
+
 app.use(cors());
+
+//Fix NodeJS/express: cache and 304 status code
+app.disable('etag');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -31,6 +35,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 
+//NOTE: test mocked data to DB 
+/*
 callDB = () => {
     const borrower = {borrowerId: 2, name: 'Temple', dateOfBirth: '2010-02-09', SIN: '789-654-123', address: 'xyz', phoneNo: '789 654 123', email: 'hello@hello.com'};
 
@@ -43,86 +49,95 @@ app.get('/createBorrower', function (req, res) {
     callDB();
     return res.send('success');
 });
+*/
+
+fastloan.init();
 
 app.get('/request', function (req, res) {
-    console.log('Before calling Fastloan...');
-    fastloan.init();
-    console.log('Query String = ' + req.query);
-    fastloan.submitLoanRequest(onchainConfig.borrowerAccount, req.query.amount, req.query.projectId, req.query.projectTitle);
-    return res.send('success');     
+    console.log('Requesting the loan from borrower ...');
+
+    let queryObj = req.query;
+    //queryObj.for((k, v) => console.log(k + ': ' + v));
+    Object.entries(queryObj).forEach( (k,v) => console.log(k + ': ' + v)); 
+
+    fastloan.submitLoanRequest(onchainConfig.borrowerAccount, queryObj.amount, queryObj.projectId, queryObj.projectTitle);
+    return res.send('success');
 });
 
 app.get('/register', function (req, res) {
-    console.log('Before calling Fastloan...');
-    fastloan.init();
+    console.log('Registering the lender ...');
     fastloan.registerLender(onchainConfig.lenderAccount);
-    return res.send('success');
+    return res.send('registerLender() succeed');
 });
 
-app.get('/getlender', function (req, res) {
-    console.log('Before calling Fastloan...');
-    fastloan.init();
+app.get('/lenders', function (req, res) {
+    console.log('Gettting list of lender addresses ...');
     fastloan.getLenders();
-    return res.send('success');
+    return res.send('getLenders() succeed');
+});
+
+app.get('/requestIDs', function (req, res) {
+    console.log('Getting list of requestIDs ...');
+    fastloan.getRequestIDs().then(
+        val => res.send({ requestIDs: val })
+    );
 });
 
 app.get('/deposit', function (req, res) {
-    console.log('Before calling Fastloan...');
-    fastloan.init();
+    console.log('Depositing to fast loan escrow with lender amount ..');
+
+    ///
     fastloan.depositToEscrow(onchainConfig.lenderAccount, 10000000000000000000);
-    return res.send('success');
+    return res.send('depositToEscrow(..) succeed');
 });
 
 app.get('/approve', function (req, res) {
-    console.log('Before calling Fastloan...');
+    console.log('Approving loan request assigned to lender...');
     fastloan.init();
     fastloan.approveLoanRequest('0x203eb4f374e71a643b458cc29df5fcf010e6b14bfba71a092da3779ad020187c', onchainConfig.lenderAccount, 6);
-    return res.send('success');
+    return res.send('approveLoanRequest(...) succeed');
 });
 
 app.get('/transfer', function (req, res) {
-    console.log('Before calling Fastloan...');
-    fastloan.init();
+    console.log('Transfering escrow amount to borrower...');
+
+    ///
     fastloan.transferbyEscrowTo(onchainConfig.borrowerAccount, 10000000000000000000, '0x203eb4f374e71a643b458cc29df5fcf010e6b14bfba71a092da3779ad020187c');
     return res.send('success');
 });
 
 app.get('/pay', function (req, res) {
-    console.log('Before calling Fastloan...');
-    fastloan.init();
+    console.log('Recording loan payment by borrower in installment...');
+
+    ///
     fastloan.recordLoanPayment('0x203eb4f374e71a643b458cc29df5fcf010e6b14bfba71a092da3779ad020187c', 1750000000000000000);
-    return res.send('success');
+    return res.send('recordLoanPayment(..) succeed');
 });
 
 app.get('/refund', function (req, res) {
-    console.log('Before calling Fastloan...');
-    fastloan.init();
+    console.log('Refund escrow amount back to lender...');
+    
+    ///
     fastloan.transferbyEscrowTo(onchainConfig.lenderAccount, 10500000000000000000, '0x203eb4f374e71a643b458cc29df5fcf010e6b14bfba71a092da3779ad020187c');
-    return res.send('success');
+    return res.send('transferbyEscrowTo(..) succeed');
 });
 
-app.get('/requestIDs', function (req, res) {
-    console.log('Before calling Fastloan...');
-    fastloan.init();
-    fastloan.getRequestIDs().then(
-        val => res.send({requestIDs: val})
-    );
-});
+
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
     next(createError(404));
-  });
-  
-  // error handler
-  app.use(function(err, req, res, next) {
+});
+
+// error handler
+app.use(function (err, req, res, next) {
     // set locals, only providing error in development
     res.locals.message = err.message;
     res.locals.error = req.app.get('env') === 'development' ? err : {};
-  
+
     // render the error page
     res.status(err.status || 500);
     res.render('error');
-  });
+});
 
 module.exports = app;

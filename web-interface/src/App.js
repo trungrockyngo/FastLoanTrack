@@ -1,9 +1,9 @@
 import './App.css';
 import {Route, Switch, Link, BrowserRouter} from "react-router-dom";
-import Home from './components/Home';
-import BorrowerComp from './components/BorrowerComp';
-import LenderComp from './components/LenderComp';
-import SuperValidatorComp from './components/SuperValidatorComp';
+import Home from './components/HomePage';
+import BorrowerComp from './components/Borrower';
+import LenderComp from './components/Lender';
+import SuperValidatorComp from './components/SuperValidator';
 
 function App() {
   return (

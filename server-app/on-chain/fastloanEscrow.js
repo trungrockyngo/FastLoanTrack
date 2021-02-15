@@ -71,6 +71,15 @@ function getLenders() {
     });
 }
 
+function getRequestIDs() {
+    const reqIDsData = contractInstance.methods.getRequestIDs()
+			.call({ from: onchainConfig.superValidatorAccount }).then(
+				val => val
+			);
+    console.log(reqIDsData);
+    return reqIDsData;
+}
+
 function depositToEscrow(lenderAddr, loanAmount) {
     web3.eth.getTransactionCount(onchainConfig.lenderAccount).then(nonce => {
         const _data = contractInstance.methods.depositToEscrow(lenderAddr).encodeABI();
@@ -149,14 +158,7 @@ function recordLoanPayment(requestId, amount) {
     });
 }
 
-function getRequestIDs() {
-    const reqIDsData = contractInstance.methods.getRequestIDs()
-			.call({ from: onchainConfig.superValidatorAccount }).then(
-				val => val
-			);
-    console.log(reqIDsData);
-    return reqIDsData;
-}
+
 
 module.exports = {
     init: init,
