@@ -149,6 +149,15 @@ function recordLoanPayment(requestId, amount) {
     });
 }
 
+function getRequestIDs() {
+    const reqIDsData = contractInstance.methods.getRequestIDs()
+			.call({ from: onchainConfig.superValidatorAccount }).then(
+				val => val
+			);
+    console.log(reqIDsData);
+    return reqIDsData;
+}
+
 module.exports = {
     init: init,
     submitLoanRequest: submitLoanRequest,
@@ -157,5 +166,6 @@ module.exports = {
     depositToEscrow: depositToEscrow,
     approveLoanRequest: approveLoanRequest,
     transferbyEscrowTo: transferbyEscrowTo,
-    recordLoanPayment: recordLoanPayment
+    recordLoanPayment: recordLoanPayment,
+    getRequestIDs: getRequestIDs
 };

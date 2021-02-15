@@ -35,10 +35,10 @@ callDB = () => {
     DB.createBorrower(borrower);
 }
 
-app.get('/ping', function (req, res) {
+app.get('/createBorrower', function (req, res) {
     console.log('Before calling DB...');
     callDB();
-    return res.send('pong');
+    return res.send('success');
 });
 
 app.get('/request', function (req, res) {
@@ -95,6 +95,15 @@ app.get('/refund', function (req, res) {
     fastloan.init();
     fastloan.transferbyEscrowTo(onchainConfig.lenderAccount, 10500000000000000000, '0x203eb4f374e71a643b458cc29df5fcf010e6b14bfba71a092da3779ad020187c');
     return res.send('success');
+});
+
+app.get('/requestIDs', function (req, res) {
+    console.log('Before calling Fastloan...');
+    fastloan.init();
+    fastloan.getRequestIDs().then(
+        val => res.send({requestIDs: val})
+    );
+    
 });
 
 // catch 404 and forward to error handler
