@@ -42,16 +42,18 @@ function registerLender(lenderAddr) {
             to: onchainConfig.contractAddr,
             value: 0,
             data: _data
-            };
-    
+        };
+
         let tx = new TxObj(rawTx);
         tx.sign(onchainConfig.superValidatorPrivateKey);
         let serializedTx = tx.serialize();
-        web3.eth.sendSignedTransaction('0x' + serializedTx.toString('hex')).on('receipt', console.log);            
+        web3.eth.sendSignedTransaction('0x' + serializedTx.toString('hex')).on('receipt', console.log);
     });
 }
 
 function getLenders() {
+    //TASK: implement return returned data from function.  -- Try to use call instead of sendSignedTransaction.  
+
     web3.eth.getTransactionCount(onchainConfig.superValidatorAccount).then(nonce => {
         const _data = contractInstance.methods.getLenders().encodeABI();
         var rawTx = {
@@ -61,8 +63,8 @@ function getLenders() {
             to: onchainConfig.contractAddr,
             value: 0,
             data: _data
-            };
-    
+        };
+
         let tx = new TxObj(rawTx);
         tx.sign(onchainConfig.superValidatorPrivateKey);
         let serializedTx = tx.serialize();
@@ -73,14 +75,33 @@ function getLenders() {
 
 function getRequestIDs() {
     const reqIDsData = contractInstance.methods.getRequestIDs()
-			.call({ from: onchainConfig.superValidatorAccount }).then(
-				val => val
-			);
-    console.log(reqIDsData);
+        .call({ from: onchainConfig.superValidatorAccount }).then(
+            val => val
+        );
+    
+        //unpack this promise with requestIDs as key 
+    //console.log(`requestIDs list is ${reqIDsData}`);
+
     return reqIDsData;
 }
 
-function depositToEscrow(lenderAddr, loanAmount) {
+function getLoanDetails(reqId) {
+    const loanAmt = contractInstance.methods.getLoanAmount(reqId)
+        .call().then(val => console.log(val));
+
+    const loanAfterInterestAmt = contractInstance.methods.getAmountAfterInterest(reqId)
+        .call().then(val => console.log(val));
+
+    const loanDetails = {
+        amt: loanAmt, 
+        afterInterestAmt: loanAfterInterestAmt
+    }
+    
+    console.log(`current loan amount of ${reqId}: ${Object.entries(loanDetails).map( (k,v) => console.log(k + ': ' + v))}`);
+    return loanDetails;
+}
+
+function depositToEscrowFrom(lenderAddr, loanAmount) {
     web3.eth.getTransactionCount(onchainConfig.lenderAccount).then(nonce => {
         const _data = contractInstance.methods.depositToEscrow(lenderAddr).encodeABI();
         var rawTx = {
@@ -90,8 +111,8 @@ function depositToEscrow(lenderAddr, loanAmount) {
             to: onchainConfig.contractAddr,
             value: loanAmount,
             data: _data
-            };
-    
+        };
+
         let tx = new TxObj(rawTx);
         tx.sign(onchainConfig.lenderPrivateKey);
         let serializedTx = tx.serialize();
@@ -109,12 +130,12 @@ function approveLoanRequest(reqId, lenderAddr, noOfInstallment) {
             to: onchainConfig.contractAddr,
             value: 0,
             data: _data
-            };
-    
+        };
+
         let tx = new TxObj(rawTx);
         tx.sign(onchainConfig.superValidatorPrivateKey);
         let serializedTx = tx.serialize();
-        web3.eth.sendSignedTransaction('0x' + serializedTx.toString('hex')).on('receipt', console.log);            
+        web3.eth.sendSignedTransaction('0x' + serializedTx.toString('hex')).on('receipt', console.log);
     });
 }
 
@@ -131,12 +152,12 @@ function transferbyEscrowTo(receiverAddr, amount, requestId) {
             to: onchainConfig.contractAddr,
             value: amount,
             data: _data
-            };
-    
+        };
+
         let tx = new TxObj(rawTx);
         tx.sign(onchainConfig.superValidatorPrivateKey);
         let serializedTx = tx.serialize();
-        web3.eth.sendSignedTransaction('0x' + serializedTx.toString('hex')).on('receipt', console.log);            
+        web3.eth.sendSignedTransaction('0x' + serializedTx.toString('hex')).on('receipt', console.log);
     });
 }
 
@@ -150,11 +171,11 @@ function recordLoanPayment(requestId, amount) {
             to: onchainConfig.contractAddr,
             value: amount,
             data: _data
-            };
+        };
         let tx = new TxObj(rawTx);
         tx.sign(onchainConfig.borrowerPrivateKey);
         let serializedTx = tx.serialize();
-        web3.eth.sendSignedTransaction('0x' + serializedTx.toString('hex')).on('receipt', console.log);            
+        web3.eth.sendSignedTransaction('0x' + serializedTx.toString('hex')).on('receipt', console.log);
     });
 }
 
@@ -165,7 +186,10 @@ module.exports = {
     submitLoanRequest: submitLoanRequest,
     registerLender: registerLender,
     getLenders: getLenders,
-    depositToEscrow: depositToEscrow,
+    getLoanDetails: getLoanDetails,
+    // getLoanAfterInterest
+
+    depositToEscrowFrom: depositToEscrowFrom,
     approveLoanRequest: approveLoanRequest,
     transferbyEscrowTo: transferbyEscrowTo,
     recordLoanPayment: recordLoanPayment,

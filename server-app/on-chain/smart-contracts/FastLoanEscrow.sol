@@ -115,6 +115,8 @@ contract FastLoanEscrow is IFastLoan {
 
 	function approveLoanRequest(bytes32 _requestId, address payable _lender, 
 	                            uint8 _numberOfInstallments) public override {
+
+		//NOTE: supervalidator mark the number of installments behalf of lender
 	    require(superValidator == msg.sender, "Approval can only be set by superValidator");
 	    
 	    //NOTE: check whether _lender is existed in the mapping 

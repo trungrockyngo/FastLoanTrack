@@ -57,8 +57,7 @@ app.get('/request', function (req, res) {
     console.log('Requesting the loan from borrower ...');
 
     let queryObj = req.query;
-    //queryObj.for((k, v) => console.log(k + ': ' + v));
-    Object.entries(queryObj).forEach( (k,v) => console.log(k + ': ' + v)); 
+    // Object.entries(queryObj).forEach( (k,v) => console.log(k + ': ' + v)); 
 
     fastloan.submitLoanRequest(onchainConfig.borrowerAccount, queryObj.amount, queryObj.projectId, queryObj.projectTitle);
     return res.send('success');
@@ -78,30 +77,56 @@ app.get('/lenders', function (req, res) {
 
 app.get('/requestIDs', function (req, res) {
     console.log('Getting list of requestIDs ...');
+
     fastloan.getRequestIDs().then(
         val => res.send({ requestIDs: val })
     );
 });
 
-app.get('/deposit', function (req, res) {
-    console.log('Depositing to fast loan escrow with lender amount ..');
+app.get('/loanDetails', function (req, res) {
+    console.log('Getting loan amount of current requestID ...');
 
-    ///
-    fastloan.depositToEscrow(onchainConfig.lenderAccount, 10000000000000000000);
-    return res.send('depositToEscrow(..) succeed');
+    let loanDetails = {};
+    //let mockedReqID = "0xb5d94120f1e1e6104b8907ad7dbf05d36d3aa04ce77fe664750a520b4b2a727f";
+    console.log("reqID " + req.query.reqID);
+
+    fastloan.getLoanDetails(req.query.reqID).amt.then(
+        val => loanDetails['amt'] = val
+    );
+
+    fastloan.getLoanDetails(req.query.reqID).afterInterestAmt.then(
+        val => loanDetails['afterInterestAmt'] = val
+    );
+
+    return loanDetails;
 });
+
 
 app.get('/approve', function (req, res) {
     console.log('Approving loan request assigned to lender...');
-    fastloan.init();
-    fastloan.approveLoanRequest('0x203eb4f374e71a643b458cc29df5fcf010e6b14bfba71a092da3779ad020187c', onchainConfig.lenderAccount, 6);
+
+    fastloan.approveLoanRequest(req.query.reqID, onchainConfig.lenderAccount, 6);
     return res.send('approveLoanRequest(...) succeed');
+});
+
+
+
+app.get('/deposit', function (req, res) {
+    console.log('Depositing to fast loan escrow with lender amount ..');
+
+    let queryObj = req.query;
+    //Object.entries(queryObj).forEach( (v,k) => console.log(k + ': ' + v)); 
+    console.log('the amt deposit ' + parseInt(queryObj.amt));
+
+    fastloan.depositToEscrowFrom(onchainConfig.lenderAccount, parseInt(queryObj.amt));
+
+    return res.send('depositByEscrow(..) succeed');
 });
 
 app.get('/transfer', function (req, res) {
     console.log('Transfering escrow amount to borrower...');
 
-    ///
+    //
     fastloan.transferbyEscrowTo(onchainConfig.borrowerAccount, 10000000000000000000, '0x203eb4f374e71a643b458cc29df5fcf010e6b14bfba71a092da3779ad020187c');
     return res.send('success');
 });
@@ -116,12 +141,11 @@ app.get('/pay', function (req, res) {
 
 app.get('/refund', function (req, res) {
     console.log('Refund escrow amount back to lender...');
-    
+
     ///
     fastloan.transferbyEscrowTo(onchainConfig.lenderAccount, 10500000000000000000, '0x203eb4f374e71a643b458cc29df5fcf010e6b14bfba71a092da3779ad020187c');
     return res.send('transferbyEscrowTo(..) succeed');
 });
-
 
 
 // catch 404 and forward to error handler

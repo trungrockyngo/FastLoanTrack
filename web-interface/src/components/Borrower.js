@@ -1,7 +1,8 @@
 import React from "react";
 import axios from "axios";
+// import LoanDetail from "./LoanDetail";
 
-class BorrowerComp extends React.Component {
+class Borrower extends React.Component {
 
     constructor(props) {
         super(props);
@@ -16,35 +17,39 @@ class BorrowerComp extends React.Component {
     handleChange = (evt) => {
         const value = evt.target.value;
         this.setState({
-          ...this.state,
-          [evt.target.name]: value
+            ...this.state,
+            [evt.target.name]: value
         });
     };
 
-    submitRequestHandler = event => {
-        event.preventDefault();
+    submitRequestHandler = (evt) => {
+        evt.preventDefault();
         let projectId = this.state.projectId;
         let projectTitle = this.state.projectTitle;
         let amount = this.state.amount;
 
         console.log('projectId = ' + projectId);
 
-        axios.get(`http://localhost:8000/request`, { params: {
-            projectId,
-            projectTitle,
-            amount
-        }}).then((response) => {
+        axios.get(`http://localhost:8000/request`, {
+            params: {
+                projectId,
+                projectTitle,
+                amount
+            }
+        }).then((response) => {
             console.log(response)
         });
-        console.log(this.state);
-        
     };
 
+    // claimLoanTransferHandler = (evt) => {
+    //     axios.get('http://localhost:8000/transfer',)
+    // }
 
     render() {
         return (
             <div>
                 <h2>Borrower</h2>
+
                 <form onSubmit={this.submitRequestHandler}>
                     <div>
                         <label>Project ID: </label>
@@ -56,15 +61,21 @@ class BorrowerComp extends React.Component {
                     </div>
                     <div>
                         <label>Loan Amount: </label>
-                        <input type="text" name="amount" value={this.state.amount} onChange={this.handleChange}  />
+                        <input type="text" name="amount" value={this.state.amount} onChange={this.handleChange} />
                     </div>
                     <div>
                         <button name="submit">Submit</button>
                     </div>
                 </form>
+
+                {/* <AccountDetails /> */}
+
+                {/* <div>
+                    <button onClick={this.claimLoanTransferHandler}> Claim loan amount that's approved </button>
+                </div> */}
             </div>
         );
     }
 }
 
-export default BorrowerComp;
+export default Borrower;
