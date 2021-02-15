@@ -344,7 +344,7 @@ const providerURL = 'http://localhost:7545';
 
 
 
-const contractAddr = '0x87e96357E3C215BD0c2CA9c3f0193950b9120500';
+const contractAddr = '0x90faBd41f15198D048479a1B7C84ea387F4b9A0f';
 const superValidatorAccount = '0x85034F4938c42deC836589BCE76CdEfe9881c7E3';
 const superValidatorPrivateKey = Buffer.from('4e7d70a35ef7e1e2ca93b60ed8039e6b185745442dd5bcfe0e5a8ed564057a42', 'hex');
 

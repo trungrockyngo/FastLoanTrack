@@ -3,6 +3,7 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var cors = require('cors');
 
 const mongoose = require("mongoose");
 const Borrower = require("./off-chain/db-models/Borrower");  
@@ -15,6 +16,8 @@ var indexRouter = require('./routes/index');
 //var usersRouter = require('./routes/users');
 
 var app = express();
+
+app.use(cors());
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -44,8 +47,9 @@ app.get('/createBorrower', function (req, res) {
 app.get('/request', function (req, res) {
     console.log('Before calling Fastloan...');
     fastloan.init();
-    fastloan.submitLoanRequest(onchainConfig.borrowerAccount, 10, 1, 'abc');
-    return res.send('success');
+    console.log('Query String = ' + req.query);
+    fastloan.submitLoanRequest(onchainConfig.borrowerAccount, req.query.amount, req.query.projectId, req.query.projectTitle);
+    return res.send('success');     
 });
 
 app.get('/register', function (req, res) {
@@ -103,7 +107,6 @@ app.get('/requestIDs', function (req, res) {
     fastloan.getRequestIDs().then(
         val => res.send({requestIDs: val})
     );
-    
 });
 
 // catch 404 and forward to error handler

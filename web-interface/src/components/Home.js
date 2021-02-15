@@ -33,7 +33,7 @@ class Home extends React.Component {
         return (
             <div>
                 <div><h1><center>FastLoan</center></h1></div>
-                <div><h2><center>Are you a Borrower or Lender?</center></h2></div>
+                <div><h2><center>Choose your role: Borrower, Lender or Super Validator</center></h2></div>
             </div>
         );
     }
