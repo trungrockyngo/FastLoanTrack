@@ -28,22 +28,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 
-// catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  next(createError(404));
-});
-
-// error handler
-app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
-
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
-});
-
 callDB = () => {
     const borrower = {borrowerId: 2, name: 'Temple', dateOfBirth: '2010-02-09', SIN: '789-654-123', address: 'xyz', phoneNo: '789 654 123', email: 'hello@hello.com'};
 
@@ -88,23 +72,45 @@ app.get('/deposit', function (req, res) {
 app.get('/approve', function (req, res) {
     console.log('Before calling Fastloan...');
     fastloan.init();
-    fastloan.approveLoanRequest('0xb2f7ef517d6d222ec36ff363c5f759f2a52106dfdc6a1a6008d6719e5d8eb641', onchainConfig.lenderAccount, 6);
+    fastloan.approveLoanRequest('0x203eb4f374e71a643b458cc29df5fcf010e6b14bfba71a092da3779ad020187c', onchainConfig.lenderAccount, 6);
     return res.send('success');
 });
 
 app.get('/transfer', function (req, res) {
     console.log('Before calling Fastloan...');
     fastloan.init();
-    fastloan.transferbyEscrowTo(onchainConfig.borrowerAccount, 10000000000000000000, '0xb2f7ef517d6d222ec36ff363c5f759f2a52106dfdc6a1a6008d6719e5d8eb641');
+    fastloan.transferbyEscrowTo(onchainConfig.borrowerAccount, 10000000000000000000, '0x203eb4f374e71a643b458cc29df5fcf010e6b14bfba71a092da3779ad020187c');
     return res.send('success');
 });
 
 app.get('/pay', function (req, res) {
     console.log('Before calling Fastloan...');
     fastloan.init();
-    fastloan.recordLoanPayment('0xa8566ea8f4a44f3884f316c0e68fe67d1fbbeae1a6bcfd62d386d6bfa7dd04c5', '1750000000000000000');
+    fastloan.recordLoanPayment('0x203eb4f374e71a643b458cc29df5fcf010e6b14bfba71a092da3779ad020187c', 1750000000000000000);
     return res.send('success');
 });
 
+app.get('/refund', function (req, res) {
+    console.log('Before calling Fastloan...');
+    fastloan.init();
+    fastloan.transferbyEscrowTo(onchainConfig.lenderAccount, 10500000000000000000, '0x203eb4f374e71a643b458cc29df5fcf010e6b14bfba71a092da3779ad020187c');
+    return res.send('success');
+});
+
+// catch 404 and forward to error handler
+app.use(function(req, res, next) {
+    next(createError(404));
+  });
+  
+  // error handler
+  app.use(function(err, req, res, next) {
+    // set locals, only providing error in development
+    res.locals.message = err.message;
+    res.locals.error = req.app.get('env') === 'development' ? err : {};
+  
+    // render the error page
+    res.status(err.status || 500);
+    res.render('error');
+  });
 
 module.exports = app;

@@ -109,32 +109,12 @@ function approveLoanRequest(reqId, lenderAddr, noOfInstallment) {
     });
 }
 
-function transferbyEscrowTo(borrowerAddr, amount, requestId) {
+function transferbyEscrowTo(receiverAddr, amount, requestId) {
     web3.eth.getTransactionCount(onchainConfig.superValidatorAccount).then(nonce => {
 
         //FIX: BigNumber issue
-        let amountBN = new BN(amount).toString();
-        const _data = contractInstance.methods.transferbyEscrowTo(borrowerAddr, amountBN, requestId).encodeABI();
-        var rawTx = {
-            nonce: nonce,
-            gasPrice: '0x20000000000',
-            gasLimit: '0x41409',
-            to: onchainConfig.contractAddr,
-            value: amountBN,
-            data: _data
-            };
-    
-        let tx = new TxObj(rawTx);
-        tx.sign(onchainConfig.superValidatorPrivateKey);
-        let serializedTx = tx.serialize();
-        web3.eth.sendSignedTransaction('0x' + serializedTx.toString('hex')).on('receipt', console.log);            
-    });
-}
-
-function transferbyEscrowTo(borrowerAddr, amount, requestId) {
-    web3.eth.getTransactionCount(onchainConfig.superValidatorAccount).then(nonce => {
-        amountValue = new BN(amount);
-        const _data = contractInstance.methods.transferbyEscrowTo(borrowerAddr, amountValue, requestId).encodeABI();
+        //Big numbers are passed to contract fucntion using web3.utils.toBN(amount) but msg.value accept the param (amount) as is.
+        const _data = contractInstance.methods.transferbyEscrowTo(receiverAddr, web3.utils.toBN(amount), requestId).encodeABI();
         var rawTx = {
             nonce: nonce,
             gasPrice: '0x20000000000',
@@ -153,7 +133,7 @@ function transferbyEscrowTo(borrowerAddr, amount, requestId) {
 
 function recordLoanPayment(requestId, amount) {
     web3.eth.getTransactionCount(onchainConfig.borrowerAccount).then(nonce => {
-        const _data = contractInstance.methods.recordLoanPayment(requestId, amount).encodeABI();
+        const _data = contractInstance.methods.recordLoanPayment(requestId, web3.utils.toBN(amount)).encodeABI();
         var rawTx = {
             nonce: nonce,
             gasPrice: '0x20000000000',
