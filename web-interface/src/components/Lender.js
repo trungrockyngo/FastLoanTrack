@@ -24,7 +24,6 @@ class Lender extends React.Component {
 
         //Before this, can assume amt is in Ether (so multiply by 10^9)
         this.setState({ amt: val });
-        // console.log('from amountSubmittedHandler() Submitting the amount: ' + this.state.amt);
     }
 
     depositToEscrowHandler = (evt) => {

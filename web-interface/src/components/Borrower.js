@@ -9,7 +9,8 @@ class Borrower extends React.Component {
         this.state = {
             projectId: '',
             projectTitle: '',
-            amount: ''
+            amount: 0, 
+            installmentAmt: 0
         };
 
     }
@@ -41,6 +42,24 @@ class Borrower extends React.Component {
         });
     };
 
+    paymentHandler = async (evt) => {
+        evt.preventDefault();
+
+        let resp = await axios.get(`http://localhost:8000/requestIDs`)
+
+        let reqID = resp.data.requestIDs[0];
+        let amt = this.state.installmentAmt; 
+        
+        axios.get(`http://localhost:8000/pay`, {
+            params: {
+                amt,
+                reqID
+            }
+        }).then((response) => {
+            console.log(response)
+        });
+    }
+
     // claimLoanTransferHandler = (evt) => {
     //     axios.get('http://localhost:8000/transfer',)
     // }
@@ -68,11 +87,15 @@ class Borrower extends React.Component {
                     </div>
                 </form>
 
-                {/* <AccountDetails /> */}
-
                 {/* <div>
                     <button onClick={this.claimLoanTransferHandler}> Claim loan amount that's approved </button>
                 </div> */}
+
+                <div className="payment">
+                    <p> Make loan payment by installment amount</p>
+                    <input type="text" name="installmentAmt" value={this.state.installmentAmt} onChange={this.handleChange}/>
+                    <button name="makePayment" onClick={this.paymentHandler}>Submit</button>
+                </div>
             </div>
         );
     }

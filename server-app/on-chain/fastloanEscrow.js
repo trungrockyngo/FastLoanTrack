@@ -74,21 +74,20 @@ function getLenders() {
 }
 
 function getRequestIDs() {
-    const reqIDsData = contractInstance.methods.getRequestIDs()
-        .call({ from: onchainConfig.superValidatorAccount }).then(
-            val => val
-        );
+    const reqIDsData = contractInstance.methods.getRequestIDs().call({ from: onchainConfig.superValidatorAccount });
     
-        //unpack this promise with requestIDs as key 
-    //console.log(`requestIDs list is ${reqIDsData}`);
+        //console.log(`requestIDs list is ${reqIDsData}`);
 
     return reqIDsData;
 }
 
 async function getLoanDetails(reqId) {
-
     const loanAmt = await contractInstance.methods.getLoanAmount(reqId).call();
+    //loanAmt.then(val => console.log("loan amt " + val));
+    console.log("loan amt " + loanAmt);
+
     const loanAfterInterestAmt = await contractInstance.methods.getAmountAfterInterest(reqId).call();
+    console.log("loan amt after interest " + loanAfterInterestAmt);
 
     const loanDetails = {
         amt: loanAmt, 
@@ -118,8 +117,10 @@ function depositToEscrowFrom(lenderAddr, loanAmount) {
 }
 
 function approveLoanRequest(reqId, lenderAddr, noOfInstallment) {
+    console.log(`reqId ${reqId}, lenderAddr ${lenderAddr}, noOfInstallment ${noOfInstallment}`)
+
     web3.eth.getTransactionCount(onchainConfig.superValidatorAccount).then(nonce => {
-        const _data = contractInstance.methods.approveLoanRequest(reqId, lenderAddr, 6).encodeABI();
+        const _data = contractInstance.methods.approveLoanRequest(reqId, lenderAddr, noOfInstallment).encodeABI();
         var rawTx = {
             nonce: nonce,
             gasPrice: '0x20000000000',
@@ -176,19 +177,26 @@ function recordLoanPayment(requestId, amount) {
     });
 }
 
+function getEscrowBalance() {
+    const escrowBalanceVal = contractInstance.methods.escrowBalance().call({ from: onchainConfig.superValidatorAccount })
+
+    console.log(`escrowBalanceVal is ${escrowBalanceVal}`);
+
+return escrowBalanceVal;
+}
 
 
 module.exports = {
     init: init,
     submitLoanRequest: submitLoanRequest,
     registerLender: registerLender,
+    getRequestIDs: getRequestIDs,
     getLenders: getLenders,
     getLoanDetails: getLoanDetails,
-    // getLoanAfterInterest
+    getEscrowBalance: getEscrowBalance, 
 
     depositToEscrowFrom: depositToEscrowFrom,
     approveLoanRequest: approveLoanRequest,
     transferbyEscrowTo: transferbyEscrowTo,
-    recordLoanPayment: recordLoanPayment,
-    getRequestIDs: getRequestIDs
+    recordLoanPayment: recordLoanPayment
 };

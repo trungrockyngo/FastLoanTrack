@@ -3,7 +3,7 @@ import React from 'react';
 
 class LoanDetail extends React.Component {
     state = {
-        // requestIDs: [],
+        //selectedRequestID: '',
         loanAmt: '',
         loanAfterInterestAmt: ''
     }
@@ -12,40 +12,47 @@ class LoanDetail extends React.Component {
         super(props);
     }
 
-    // componentDidMount() {
-    //     // axios.get(`http://localhost:8000/requestIDs`
-    //     // ).then((response) => {
-    //     //     //console.log("response.data = " + response.data);
-    //     //     console.log("response.data.requestIDs = " + response.data.requestIDs);
-    //     //     this.setState({ res: response.data.requestIDs });
-    //     // });
-    // }
+    componentDidUpdate() {
+        console.log(`Is the loan approved? ` + this.props.approved);
+
+        if (this.props.approved) {
+            let reqID = String(this.props.currentReqID);
+            console.log("currentReqID " + this.props.currentReqID);
+
+            let loanDetails = {};
+
+            // axios.get(`http://localhost:8000/loanDetails`, {
+            //     params: { reqID }
+            // })
+            //     .then((response) => {
+            //         console.log("loan Details " + response.data);
+            //         loanDetails = response.data;
+
+            //         console.log(`loanDetails.amt: ${loanDetails.amt}, loanDetails.afterInterestAmt ${loanDetails.afterInterestAmt}`);
+
+            //         this.setState = {
+            //             loanAmt: loanDetails.amt,
+            //             loanAfterInterestAmt: loanDetails.afterInterestAmt
+            //         }
+            //     });
+        }
+    }
+
 
     render() {
-        console.log(`Is the loan approved? ` + this.props.approved);
-        
-        if (this.props.approved) {
 
-            let loanDetails = axios.get(`http://localhost:8000/loanDetails`)
-                .then((response) => {
-                    console.log(response);
-                    this.setState = {
-                        loanAmount: loanDetails.amt,
-                        loanAfterInterestAmt: loanDetails.afterInterestAmt
-                    }
-                });
 
-        }
-
+        //ISSUE: somehow state variable not rendering despite having non-null values 
         return (
             <>
                 <div>
+
                     <label> Loan Amount (Before Interest)</label>
-                    <label> {this.state.loanAmt} </label>
+                    {/* <input value= {this.state.loanAmt}/> */}
                 </div>
                 <div>
                     <label> Loan Amount After Interest </label>
-                    <label> {this.state.loanAfterInterestAmt} </label>
+                    <p> {this.state.loanAfterInterestAmt} </p>
                 </div>
             </>
         )
