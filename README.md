@@ -1,4 +1,4 @@
-# FastLoan - A microfianance DApp
+# FastLoan - A microfinance DApp
 
 ## Team Members
 * Trung Ngo
@@ -18,7 +18,7 @@ FastLoan is a project implemented with the aim of helping both unemployed, low-i
 * From command line, Go to web-interface folder and start express: `npm start`. 
 * view web interface on port 3000, [http://localhost:3000](http://localhost:3000)
 
-## Quick run through of DApp
+## Features run through of DApp
 * Choose if super-validator, borrower, or lender.
 * Borrower's interface:
   * Submit loan application
@@ -32,7 +32,7 @@ FastLoan is a project implemented with the aim of helping both unemployed, low-i
   * Transfer amount to borrower
   * Refund to lender
 
-## Sample Walkthrough of DApp
+## Sample Walk-through of DApp
 1.  From Borrower screen, submit loan request by filling project id, title and amount e.g.(1, abc, 10). click Submit.
 2.  From Lender screen, click Register.
 3.  From Super Validator screen, fill number of installments (e.g. 6) and click Approve.
