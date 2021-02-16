@@ -343,17 +343,17 @@ const abi = [
 const providerURL = 'http://localhost:7545';
 
 //NOTE: as of now, every time of deployment on the contract using Ganache, contract address is changed 
-const contractAddr = '0xAaD22367D390C6Ca9BE366aa93997423EDd4C215';
+const contractAddr = '0xe78A0F7E598Cc8b0Bb87894B0F60dD2a88d6a8Ab';
 
 //NOTE: prevent Ganache account addresses be changed by saving the Ethereum workspace
-const superValidatorAccount = '0x3D728dca2506331E82E9fa3EBD8499fc3e2A5ad0';
-const superValidatorPrivateKey = Buffer.from('9f052a1f34716f15911b4dfd22c0c7cbb1b33e6b2ccf0ad319a294f0fdf4b21e', 'hex');
+const superValidatorAccount = '0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1';
+const superValidatorPrivateKey = Buffer.from('0x4f3edf983ac636a65a842ce7c78d9aa706d3b113bce9c46f30d7d21715b23b1d', 'hex');
 
-const borrowerAccount = '0x09bC45A63f63fa23F256D6415a7eC5590F5dd39c';
-const borrowerPrivateKey = Buffer.from('3340b3216442125af6aeb5c4a866a88b7b27f82378b9a3d47564933b35940daa', 'hex');
+const borrowerAccount = '0xFFcf8FDEE72ac11b5c542428B35EEF5769C409f0';
+const borrowerPrivateKey = Buffer.from('0x6cbed15c793ce57650b9877cf6fa156fbef513c4e6134f022a85b1ffdd59b2a1', 'hex');
 
-const lenderAccount = '0xA9F9B1b1f277CC1A8b3726b313D46676b562919c';
-const lenderPrivateKey = Buffer.from('4549b6d72eafb01c60fc1ee1cbd426146f3cb9d003662fea73a0d792e6a3b7af', 'hex');
+const lenderAccount = '0x22d491Bde2303f2f43325b2108D26f1eAbA1e32b';
+const lenderPrivateKey = Buffer.from('0x6370fd033278c143179d81c5526140625662b8daa446c22ee2d73db3707e620c', 'hex');
 
 module.exports = {
     contractAddr: contractAddr,
