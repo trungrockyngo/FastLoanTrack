@@ -83,24 +83,14 @@ app.get('/requestIDs', function (req, res) {
     );
 });
 
-app.get('/loanDetails', function (req, res) {
+app.get('/loanDetails', async function (req, res) {
     console.log('Getting loan amount of current requestID ...');
 
     let loanDetails = {};
-    //let mockedReqID = "0xb5d94120f1e1e6104b8907ad7dbf05d36d3aa04ce77fe664750a520b4b2a727f";
-    console.log("reqID " + req.query.reqID);
-
-    fastloan.getLoanDetails(req.query.reqID).amt.then(
-        val => loanDetails['amt'] = val
-    );
-
-    fastloan.getLoanDetails(req.query.reqID).afterInterestAmt.then(
-        val => loanDetails['afterInterestAmt'] = val
-    );
-
-    return loanDetails;
+    loanDetails = await fastloan.getLoanDetails(req.query.reqID);
+    
+    res.send(loanDetails);
 });
-
 
 app.get('/approve', function (req, res) {
     console.log('Approving loan request assigned to lender...');
@@ -108,8 +98,6 @@ app.get('/approve', function (req, res) {
     fastloan.approveLoanRequest(req.query.reqID, onchainConfig.lenderAccount, 6);
     return res.send('approveLoanRequest(...) succeed');
 });
-
-
 
 app.get('/deposit', function (req, res) {
     console.log('Depositing to fast loan escrow with lender amount ..');

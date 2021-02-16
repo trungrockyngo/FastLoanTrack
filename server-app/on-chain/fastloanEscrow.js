@@ -85,19 +85,16 @@ function getRequestIDs() {
     return reqIDsData;
 }
 
-function getLoanDetails(reqId) {
-    const loanAmt = contractInstance.methods.getLoanAmount(reqId)
-        .call().then(val => console.log(val));
+async function getLoanDetails(reqId) {
 
-    const loanAfterInterestAmt = contractInstance.methods.getAmountAfterInterest(reqId)
-        .call().then(val => console.log(val));
+    const loanAmt = await contractInstance.methods.getLoanAmount(reqId).call();
+    const loanAfterInterestAmt = await contractInstance.methods.getAmountAfterInterest(reqId).call();
 
     const loanDetails = {
         amt: loanAmt, 
         afterInterestAmt: loanAfterInterestAmt
     }
     
-    console.log(`current loan amount of ${reqId}: ${Object.entries(loanDetails).map( (k,v) => console.log(k + ': ' + v))}`);
     return loanDetails;
 }
 
