@@ -22,10 +22,25 @@ FastLoan is a project implemented with the aim of helping both unemployed, low-i
 * Choose if super-validator, borrower, or lender.
 * Borrower's interface:
   * Submit loan application
-  * pay loan payment by installment amount
+  * Pay loan payment by installment amount
 * Lender's interface
   * Lender to register on the system
   * Lender deposit amount to fastLoanEscrow 
 * super-validator interface
-  * get escrow balance
-  * approve loan requests
+  * Get escrow balance
+  * Approve loan requests
+  * Transfer amount to borrower
+  * Refund to lender
+
+## Sample Walkthrough of DApp
+1.  From Borrower screen, submit loan request by filling project id, title and amount e.g.(1, abc, 10). click Submit.
+2.  From Lender screen, click Register.
+3.  From Super Validator screen, fill number of installments (e.g. 6) and click Approve.
+4.  From Lender screen, Enter amount e.g. '10000000000000000000' and click Submit.
+5.  From Super Validator screen, click on Get Escrow Balance to get balance in the smart contract. it will show 10000000000000000000.
+6.  Transfer to borrower from Super Validator screen. Click Transfer to Borrower.
+7.  From Super Validator screen, click on Get Escrow Balance to get balance in the smart contract. it will show 0 balance.
+8.  Borrower can pay back loan in installments. Do this from Borrower screen. Enter amount as '1750000000000000000' and click Submit x 6 times. since number of installment is 6 and loan interest is at 5%
+9.  From Super Validator screen, Get Escrow Balance after each deposit from borrower with Get escrow balance button. it should now show 10500000000000000000.
+10. Refund lender's money with interest. From Super Validator screen, click Refund to Lender.
+11. Escrow balance after transferring money to lender should now show 0.
